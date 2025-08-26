@@ -1,19 +1,16 @@
-//consider as pointer
 import java.util.*;
-import java.time.LocalDate;  //Live dates
-import java.io.*;  //for saving loading a file
+import java.time.LocalDate;  
+import java.io.*;  
 
 public class ExpenseManager {
     private static Scanner sc = new Scanner(System.in);
-    private static ArrayList<Expense>expenses=new ArrayList<>(); //Array of variable type
-    private static int idCounter=1;  //used for index or expense id
+    private static ArrayList<Expense>expenses=new ArrayList<>(); 
+    private static int idCounter=1;  
 
-    //file named expenses.dat and put file in str called DATA_FILE
-    //final is for constant i.e we cannot change file
     private static final String DATA_FILE = "expenses.dat";
     public static void main(String args[]){
-        loadFromFile(); //load saved expenses (if any) before starting the menu loop
-        boolean running = true;  //if true while runs otherwise exits if user choose 4
+        loadFromFile(); 
+        boolean running = true; 
         while(running){
             showMenu();
             String choice = sc.nextLine();
@@ -44,7 +41,7 @@ public class ExpenseManager {
             }
         }
         System.out.println("Exiting..");
-        saveToFile();  //file save on exit
+        saveToFile();  
         sc.close();
     }
 
@@ -59,7 +56,7 @@ public class ExpenseManager {
 
     }
 
-    private static void addExpense(){  //method
+    private static void addExpense(){  
         System.out.print("Description: ");
         String desc=sc.nextLine();
         System.out.print("Amount: ");
@@ -67,16 +64,16 @@ public class ExpenseManager {
         double amount;
 
         try{
-            amount = Double.parseDouble(amountStr);  //convert string to double
+            amount = Double.parseDouble(amountStr);  
         }catch(NumberFormatException e){
             System.out.println("Invalid amount. Aborting add.");
             return;
         }
-        Expense e = new Expense(idCounter++,desc,amount,LocalDate.now());  //object 
-        expenses.add(e);  // added new expense in arraylist expenses
+        Expense e = new Expense(idCounter++,desc,amount,LocalDate.now());  
+        expenses.add(e);  
         System.out.println("Added:"+e);
 
-        saveToFile();  //save to disk after a successful change
+        saveToFile();  
     }
 
     private static void listExpenses(){
@@ -85,7 +82,7 @@ public class ExpenseManager {
             return;
         }
         System.out.println("\nID | Description | Amount | Date");
-        for(Expense e : expenses){  //for each loop
+        for(Expense e : expenses){ 
             System.out.println(e);
         }
     }
@@ -93,20 +90,20 @@ public class ExpenseManager {
     private static void removeExpense(){
         System.out.print("Enter ID to remove: ");
         String idStr = sc.nextLine();
-        int id;  //empty id to convert above str id into int
+        int id;  
         try{
             id=Integer.parseInt(idStr);
         }catch(NumberFormatException ex){
             System.out.println("Invalid ID.");
             return;
         }
-        Iterator<Expense> it = expenses.iterator();  //Expense is object as line 64
+        Iterator<Expense> it = expenses.iterator();  
         while(it.hasNext()){
             Expense ex = it.next();
             if(ex.getID()==id){
                 it.remove();
                 System.out.println("Removed: "+ex);
-                saveToFile();  //file saved
+                saveToFile();  
                 return;
             }
         }
@@ -140,10 +137,6 @@ public class ExpenseManager {
     }
 }
 
-    //objectoutputstream is aspecial java class that take whole arraylist and save it in file
-    //new fileoutputstream(data file) opens the file new creates newone if doesnt exist
-    //oos.writeObject(expenses) takes expenses from array expenses and write to file
-    
     private static void saveToFile(){
         try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
             oos.writeObject(expenses);
@@ -153,25 +146,17 @@ public class ExpenseManager {
     }
 
     private static void loadFromFile(){
-        //initially data file is just string we converted it to the file
-        //!f is if f not exists
         File f = new File(DATA_FILE);
         if(!f.exists()){
             System.out.println("No saved Data found.Starting fresh.");
             return;
         }
-        //Objectinputstream is wraps byte stream and gives power to read it
-
+        
         try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
             Object obj = ois.readObject();
-            if(obj instanceof ArrayList<?>) {  //checks what we read is Arraylist or not
-               
-                //take obj we read from file and treat it as arraylist of expenses
+            if(obj instanceof ArrayList<?>) {  
                 expenses = (ArrayList<Expense>) obj;
-                int maxId = 0; //made number called maxid set to 0
-                //for each loop
-                //for each expense e we look at its id if it greater than maxid we update maxid
-                //because of this end of expenses we get largest id
+                int maxId = 0; 
                 for(Expense e : expenses){
                     if(e.getID()>maxId) maxId=e.getID();
                 }
@@ -182,7 +167,6 @@ public class ExpenseManager {
               System.out.println("Failed to load saved data: " + e.getMessage());
             }  
         }
-
 
     private static class Expense implements Serializable{
         private static final long serialVersionUID = 1L;
